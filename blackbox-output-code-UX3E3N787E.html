@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧩 5 Puzzle Ajaib Si Kecil - Petualangan Pintar</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Comic Sans MS', cursive;
+            background: linear-gradient(-45deg, #ff9a9e, #fecfef, #fecfef, #a8edea);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        @keyframes gradientBG { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
+        
+        .container { max-width: 600px; margin: 0 auto; text-align: center; }
+        h1 { 
+            color: #ff6b6b; font-size: 2.5em; margin: 20px 0; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .puzzle-selector {
+            background: white; border-radius: 20px; padding: 20px; margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .puzzle-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white; border: none; padding: 15px 25px; 
+            margin: 10px; border-radius: 30px; font-size: 1.1em;
+            cursor: pointer; transition: all 0.3s; font-family: inherit;
+            box-shadow: 0 5px 15px rgba(255,107,107,0.4);
+        }
+        .puzzle-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(255,107,107,0.6); }
+        .puzzle-btn.active { background: linear-gradient(45deg, #4ecdc4, #44bdad); }
+        
+        .puzzle-area { 
+            background: white; margin: 20px 0; padding: 30px; 
+            border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            display: none;
+        }
+        .puzzle-area.active { display: block; }
+        
+        #puzzle-board {
+            width: 450px; height: 450px; margin: 20px auto; 
+            background: linear-gradient(45deg, #f0f8ff, #e0f2f1);
+            border: 8px solid #ff6b6b; border-radius: 20px; 
+            position: relative; margin-bottom: 20px;
+        }
+        .target {
+            position: absolute; width: 110px; height: 110px; 
+            border: 4px dashed #4ecdc4; border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        .target.drop-hover { border-color: #45b7d1; background: rgba(78,205,196,0.1); }
+        .piece {
+            position: absolute; width: 110px; height: 110px;
+            border: 4px solid #ff9a9e; border-radius: 15px;
+            cursor: grab; transition: all 0.3s ease;
+            user-select: none; z-index: 10;
+        }
+        .piece:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .piece.correct { border-color: #45b7d1 !important; transform: scale(1.02); }
+        .piece.dragging { opacity: 0.8; transform: rotate(5deg); }
+        
+        #pieces-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+        .reset-btn, .check-btn, .next-btn {
+            background: linear-gradient(45deg, #4ecdc4, #44bdad);
+            color: white; border: none; padding: 18px 35px; 
+            font-size: 1.2em; border-radius: 30px; cursor: pointer;
+            margin: 10px; font-family: inherit; transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(78,205,196,0.4);
+        }
+        .reset-btn:hover, .check-btn:hover, .next-btn:hover { 
+            transform: translateY(-3px); box-shadow: 0 8px 25px rgba(78,205,196,0.6); 
+        }
+        
+        .celebration {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(255,255,255,0.95); display: none; 
+            justify-content: center; align-items: center; flex-direction: column;
+            z-index: 1000; backdrop-filter: blur(10px);
+        }
+        .celebration.show { display: flex; animation: popIn 0.5s ease; }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .star-burst { font-size: 5em; color: #ffd700; margin: 20px; animation: bounce 1s infinite; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-30px); } 60% { transform: translateY(-15px); } }
+        
+        @media (max-width: 600px) {
+            #puzzle-board { width: 350px; height: 350px; }
+            .piece, .target { width: 85px; height: 85px; }
+            h1 { font-size: 2em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧩 5 Puzzle Ajaib Si Kecil</h1>
+        
+        <div class="puzzle-selector">
+            <button class="puzzle-btn active" data-puzzle="0">😺 Kucing Lucu</button>
+            <button class="puzzle-btn" data-puzzle="1">🍎 Apel Merah</button>
+            <button class="puzzle-btn" data-puzzle="2">🚗 Mobil Balap</button>
+            <button class="puzzle-btn" data-puzzle="3">🎈 Balon Warna</button>
+            <button class="puzzle-btn" data-puzzle="4">🤖 Robot Pintar</button>
+        </div>
+        
+        <div id="puzzle-0" class="puzzle-area active">
+            <h2 style="color:#ff6b6b; margin-bottom: 20px;">Seret ke kotak yang tepat!</h2>
+            <div id="puzzle-board">
+                <!-- 9 Target Positions (3x3 grid) -->
+                <div class="target" style="top:10px;left:10px;"></div>
+                <div class="target" style="top:10px;left:170px;"></div>
+                <div class="target" style="top:10px;left:330px;"></div>
+                <div class="target" style="top:170px;left:10px;"></div>
+                <div class="target" style="top:170px;left:170px;"></div>
+                <div class="target" style="top:170px;left:330px;"></div>
+                <div class="target" style="top:330px;left:10px;"></div>
+                <div class="target" style="top:330px;left:170px;"></div>
+                <div class="target" style="top:330px;left:330px;"></div>
+            </div>
+            <div id="pieces-container"></div>
+            <div>
+                <button class="reset-btn" onclick="resetCurrentPuzzle()">🔄 Ulangi</button>
+                <button class="check-btn" onclick="checkCurrentPuzzle()">✅ Cek!</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="celebration" id="celebration">
+        <div class="star-burst">⭐⭐⭐⭐⭐</div>
+        <h2 style="color:#ff6b6b; font-size: 2.5em;">WOW! SEMUA BENAR! 🎉</h2>
+        <p style="font-size: 1.5em; color:#4ecdc4;">Kamu hebat sekali! 🏆</p>
+        <button class="next-btn" onclick="nextPuzzle()">Puzzle Selanjutnya ➡️</button>
+        <button class="reset-btn" onclick="resetCurrentPuzzle(); hideCelebration()">Main Lagi!</button>
+    </div>
+
+    <script>
+        const puzzles = [
+            // Puzzle 0: Kucing
+            { name: 'Kucing Lucu', pieces: ['🐱','😺','🙀','🐾','🐾','😸','😻','🐱','😺'] },
+            // Puzzle 1: Apel
+            { name: 'Apel Merah', pieces: ['🍎','🍏','🍎','🍎','🟥','🟥','🍎','🍎','🍏'] },
+            // Puzzle 2: Mobil
+            { name: 'Mobil Balap', pieces: ['🚗','🏁','⚡','🚗','🔴','🏎️','🚗','💨','🏁'] },
+            // Puzzle 3: Balon
+            { name: 'Balon Warna', pieces: ['🎈','🟡','🎈','🟢','🔵','🎈','🟣','🎈','🟠'] },
+            // Puzzle 4: Robot
+            { name: 'Robot Pintar', pieces: ['🤖','⚙️','💻','🔋','🤖','📱','🛠️','🤖','⚡'] }
+        ];
+        
+        let currentPuzzle = 0;
+        let draggedPiece = null;
+        let puzzleAreas = document.querySelectorAll('.puzzle-area');
+        let puzzleBtns = document.querySelectorAll('.puzzle-btn');
+        
+        // Initialize first puzzle
+        loadPuzzle(0);
+        
+        // Puzzle selector
+        puzzleBtns.forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                currentPuzzle = index;
+                loadPuzzle(index);
+            });
+        });
+        
+        function loadPuzzle(index) {
+            // Update UI
+            puzzleBtns.forEach(b => b.classList.remove('active'));
+            puzzleBtns[index].classList.add('active');
+            puzzleAreas.forEach(a => a.classList.remove('active'));
+            document.getElementById(`puzzle-${index}`).classList.add('active');
+            
+            // Load pieces
+            const piecesContainer = document.querySelector('#pieces-container');
+            piecesContainer.innerHTML = '';
+            const targets = document.querySelectorAll('.target');
+            
+            puzzles[index].pieces.forEach((emoji, i) => {
+                const piece = document.createElement('div');
+                piece.className = 'piece';
+                piece.draggable = true;
+                piece.innerHTML = emoji;
+                piece.style.fontSize = '60px';
+                piece.style.display = 'flex';
+                piece.style.alignItems = 'center';
+                piece.style.justifyContent = 'center';
+                piece.dataset.target = i;
+                piecesContainer.appendChild(piece);
+                
+                // Drag events
+                piece.addEventListener('dragstart', (e) => {
+                    draggedPiece = piece;
+                    piece.classList.add('dragging');
+                });
+                piece.addEventListener('dragend', () => {
+                    piece.classList.remove('dragging');
+                });
+            });
+            
+            // Target events
+            targets.forEach((target, i) => {
+                target.ondragover = (e) => {
+                    e.preventDefault();
+                    target.classList.add('drop-hover');
+                };
+                target.ondragleave = () => target.classList.remove('drop-hover');
+                target.ondrop = (e) => {
+                    e.preventDefault();
+                    if (draggedPiece) {
+                        target.appendChild(draggedPiece);
+                        draggedPiece.style.position = 'static';
+                        draggedPiece.classList.add('correct');
+                        target.classList.remove('drop-hover');
+                    }
+                };
+            });
+        }
+        
+        function resetCurrentPuzzle() {
+            loadPuzzle(currentPuzzle);
+            hideCelebration();
+        }
+        
+        function checkCurrentPuzzle() {
+            const pieces = document.querySelectorAll('.piece');
+            let correct = 0;
+            pieces.forEach(piece => {
+                if (piece.parentElement.classList.contains('target')) {
+                    correct++;
+                    piece.classList.add('correct');
+                }
+            });
+            if (correct === pieces.length) {
+                showCelebration();
+            } else {
+                alert('📢 Hampir! Coba lagi ya, tinggal sedikit lagi! 💪');
+            }
+        }
+        
+        function nextPuzzle() {
+            currentPuzzle = (currentPuzzle + 1) % 5;
+            loadPuzzle(currentPuzzle);
+            hideCelebration();
+        }
+        
+        function showCelebration() { document.getElementById('celebration').classList.add('show'); }
+        function hideCelebration() { document.getElementById('celebration').classList.remove('show'); }
+    </script>
+</body>
+</html>
